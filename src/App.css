@@ -1,0 +1,73 @@
+.blue-text {
+  color: var(--theme);
+}
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 90vh;
+}
+.signup-signin-container {
+  width: 30vw;
+  min-width: 400px;
+  box-shadow: 0px 0px 30px 8px rgba(227, 227, 227, 0.75);
+  border-radius: 1rem;
+  padding: 2rem;
+}
+
+.input-wrapper {
+  margin: 1rem 0rem;
+  width: 100%;
+}
+.input-wrapper p {
+  margin-bottom: 0px;
+  color: #000;
+}
+
+.input-wrapper input {
+  border: 0px;
+  border-bottom: 1px solid #000;
+  padding: 0.5rem 0rem;
+  opacity: 0.5;
+  width: 100%;
+}
+
+.input-wrapper input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  opacity: 1;
+  transition: all 0.3s;
+}
+
+.btn {
+  color: var(--theme);
+  text-align: center;
+  width: 100%;
+  margin: 0.5rem 0rem;
+  padding: 0.5rem;
+  background-color: #fff;
+  border: 1px solid var(--theme);
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: var(--theme);
+  color: #fff;
+  transition: all 0.3s;
+}
+
+.btn-blue {
+  background-color: var(--theme);
+  color: #fff;
+}
+
+.btn-blue:hover {
+  background-color: #fff !important;
+  color: var(--theme) !important;
+  transition: all 0.3s;
+}
