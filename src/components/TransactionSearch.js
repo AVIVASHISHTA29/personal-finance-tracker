@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Input, Table, Select, Radio } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-
+import search from "../assets/search.svg";
 const { Search } = Input;
 const { Option } = Select;
 
@@ -12,6 +12,11 @@ const TransactionSearch = ({ transactions }) => {
   const [sortKey, setSortKey] = useState("");
 
   const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
     {
       title: "Type",
       dataIndex: "type",
@@ -36,7 +41,7 @@ const TransactionSearch = ({ transactions }) => {
 
   const filteredTransactions = transactions.filter((transaction) => {
     const searchMatch = searchTerm
-      ? transaction.tag.toLowerCase().includes(searchTerm.toLowerCase())
+      ? transaction.name.toLowerCase().includes(searchTerm.toLowerCase())
       : true;
     const tagMatch = selectedTag ? transaction.tag === selectedTag : true;
     const typeMatch = typeFilter ? transaction.type === typeFilter : true;
@@ -60,13 +65,37 @@ const TransactionSearch = ({ transactions }) => {
   }));
 
   return (
-    <div>
-      <Search
-        placeholder="Search by tag"
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ width: 200, marginRight: 10 }}
-      />
-      <Select
+    <div style={{ width: "100%", padding: "0rem 2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "1rem",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <div className="input-flex">
+          <img src={search} width="16" />
+          <input
+            placeholder="Search by Name"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <Select
+          className="select-input"
+          onChange={(value) => setTypeFilter(value)}
+          value={typeFilter}
+          placeholder="Filter"
+          allowClear
+        >
+          <Option value="">All</Option>
+          <Option value="income">Income</Option>
+          <Option value="expense">Expense</Option>
+        </Select>
+      </div>
+
+      {/* <Select
         style={{ width: 200, marginRight: 10 }}
         onChange={(value) => setSelectedTag(value)}
         placeholder="Filter by tag"
@@ -75,22 +104,29 @@ const TransactionSearch = ({ transactions }) => {
         <Option value="food">Food</Option>
         <Option value="education">Education</Option>
         <Option value="office">Office</Option>
-        {/* Add more tags here */}
-      </Select>
-      <Radio.Group
-        onChange={(e) => setTypeFilter(e.target.value)}
-        value={typeFilter}
-      >
-        <Radio.Button value="">All</Radio.Button>
-        <Radio.Button value="income">Income</Radio.Button>
-        <Radio.Button value="expense">Expense</Radio.Button>
-      </Radio.Group>
-      <Radio.Group onChange={(e) => setSortKey(e.target.value)} value={sortKey}>
-        <Radio.Button value="">No Sort</Radio.Button>
-        <Radio.Button value="date">Sort by Date</Radio.Button>
-        <Radio.Button value="amount">Sort by Amount</Radio.Button>
-      </Radio.Group>
-      <Table columns={columns} dataSource={dataSource} />
+      </Select> */}
+      <div className="my-table">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <h2>My Transactions</h2>
+          <Radio.Group
+            className="input-radio"
+            onChange={(e) => setSortKey(e.target.value)}
+            value={sortKey}
+          >
+            <Radio.Button value="">No Sort</Radio.Button>
+            <Radio.Button value="date">Sort by Date</Radio.Button>
+            <Radio.Button value="amount">Sort by Amount</Radio.Button>
+          </Radio.Group>
+        </div>
+
+        <Table columns={columns} dataSource={dataSource} />
+      </div>
     </div>
   );
 };

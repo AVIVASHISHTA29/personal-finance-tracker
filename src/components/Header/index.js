@@ -1,13 +1,34 @@
 import React from "react";
 import "./styles.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../../firebase";
+import userSvg from "../../assets/user.svg";
 function Header() {
+  const [user] = useAuthState(auth);
+  const navigate = useNavigate();
+  function logout() {
+    auth.signOut();
+    navigate("/");
+  }
+
   return (
     <div className="navbar">
       <p className="navbar-heading">Financly.</p>
-      <Link to="/dashboard">
-        <p className="navbar-link">Dashboard</p>
-      </Link>
+      {user ? (
+        <p className="navbar-link" onClick={logout}>
+          <span style={{ marginRight: "1rem" }}>
+            <img
+              src={user.photoURL ? user.photoURL : userSvg}
+              width={user.photoURL ? "32" : "24"}
+              style={{ borderRadius: "50%" }}
+            />
+          </span>
+          Logout
+        </p>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
