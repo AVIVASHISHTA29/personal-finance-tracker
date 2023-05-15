@@ -12,6 +12,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { addDoc, collection, getDocs, query } from "firebase/firestore";
 import Loader from "./Loader";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const [user] = useAuthState(auth);
@@ -117,6 +118,8 @@ const Dashboard = () => {
     };
 
     setTransactions([...transactions, newTransaction]);
+    setIsExpenseModalVisible(false);
+    setIsIncomeModalVisible(false);
     addTransaction(newTransaction);
     calculateBalance();
   };
@@ -150,8 +153,10 @@ const Dashboard = () => {
         transaction
       );
       console.log("Document written with ID: ", docRef.id);
+      toast.success("Transaction Added!");
     } catch (e) {
       console.error("Error adding document: ", e);
+      toast.error("Couldn't add transaction");
     }
   }
 
@@ -166,6 +171,7 @@ const Dashboard = () => {
         transactionsArray.push(doc.data());
       });
       setTransactions(transactionsArray);
+      toast.success("Transactions Fetched!");
     }
     setLoading(false);
   }
