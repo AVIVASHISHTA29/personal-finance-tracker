@@ -3,10 +3,17 @@ import { Input, Table, Select, Radio } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import search from "../assets/search.svg";
 import { parse } from "papaparse";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 const { Option } = Select;
 
-const TransactionSearch = ({ transactions, exportToCsv, addTransaction }) => {
+const TransactionSearch = ({
+  transactions,
+  exportToCsv,
+  addTransaction,
+  fetchTransactions,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -15,18 +22,28 @@ const TransactionSearch = ({ transactions, exportToCsv, addTransaction }) => {
 
   function importFromCsv(event) {
     event.preventDefault();
-    console.log("hi");
-    parse(event.target.files[0], {
-      header: true,
-      complete: async function (results) {
-        // Now results.data is an array of objects representing your CSV rows
-        for (const transaction of results.data) {
-          // Write each transaction to Firebase, you can use the addTransaction function here
-          console.log("Transactions", transaction);
-          await addTransaction(transaction, true);
-        }
-      },
-    });
+    try {
+      parse(event.target.files[0], {
+        header: true,
+        complete: async function (results) {
+          // Now results.data is an array of objects representing your CSV rows
+          for (const transaction of results.data) {
+            // Write each transaction to Firebase, you can use the addTransaction function here
+            console.log("Transactions", transaction);
+            const newTransaction = {
+              ...transaction,
+              amount: parseInt(transaction.amount),
+            };
+            await addTransaction(newTransaction, true);
+          }
+        },
+      });
+      toast.success("All Transactions Added");
+      fetchTransactions();
+    } catch (e) {
+      toast.error(e.message);
+    }
+
     // TODO: Reload window
   }
 

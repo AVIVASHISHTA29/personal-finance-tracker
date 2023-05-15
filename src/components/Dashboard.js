@@ -270,6 +270,7 @@ const Dashboard = () => {
               <TransactionSearch
                 transactions={transactions}
                 exportToCsv={exportToCsv}
+                fetchTransactions={fetchTransactions}
                 addTransaction={addTransaction}
               />
             </>
