@@ -12,12 +12,13 @@ function Header() {
     navigate("/");
   }
 
-  if (user && !window.location.href.includes("dashboard")) {
-    navigate("/dashboard");
-  }
-  if (!user) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    } else {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   return (
     <div className="navbar">
