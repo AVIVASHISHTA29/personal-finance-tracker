@@ -101,6 +101,7 @@ const Dashboard = () => {
       date: moment(values.date).format("YYYY-MM-DD"),
       amount: parseFloat(values.amount),
       tag: values.tag,
+      name: values.name,
     };
 
     setTransactions([...transactions, newTransaction]);
