@@ -12,6 +12,10 @@ function Header() {
     navigate("/");
   }
 
+  if (user && !window.location.href.includes("dashboard")) {
+    navigate("/dashboard");
+  }
+
   return (
     <div className="navbar">
       <p className="navbar-heading">Financly.</p>
