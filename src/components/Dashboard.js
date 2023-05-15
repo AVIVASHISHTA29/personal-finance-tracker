@@ -14,6 +14,7 @@ import { addDoc, collection, getDocs, query } from "firebase/firestore";
 import Loader from "./Loader";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { unparse } from "papaparse";
 
 const Dashboard = () => {
   const [user] = useAuthState(auth);
@@ -149,17 +150,21 @@ const Dashboard = () => {
     calculateBalance();
   }, [transactions]);
 
-  async function addTransaction(transaction) {
+  async function addTransaction(transaction, many) {
     try {
       const docRef = await addDoc(
         collection(db, `users/${user.uid}/transactions`),
         transaction
       );
       console.log("Document written with ID: ", docRef.id);
-      toast.success("Transaction Added!");
+      if (!many) {
+        toast.success("Transaction Added!");
+      }
     } catch (e) {
       console.error("Error adding document: ", e);
-      toast.error("Couldn't add transaction");
+      if (!many) {
+        toast.error("Couldn't add transaction");
+      }
     }
   }
 
@@ -201,6 +206,20 @@ const Dashboard = () => {
     minWidth: "400px",
     flex: 1,
   };
+
+  function exportToCsv() {
+    const csv = unparse(transactions, {
+      fields: ["name", "type", "date", "amount", "tag"],
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "transactions.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   return (
     <div className="dashboard-container">
@@ -248,7 +267,11 @@ const Dashboard = () => {
                   )}
                 </Card>
               </Row>
-              <TransactionSearch transactions={transactions} />
+              <TransactionSearch
+                transactions={transactions}
+                exportToCsv={exportToCsv}
+                addTransaction={addTransaction}
+              />
             </>
           )}
         </>

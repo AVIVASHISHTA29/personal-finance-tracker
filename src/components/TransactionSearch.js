@@ -1,15 +1,34 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Input, Table, Select, Radio } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import search from "../assets/search.svg";
+import { parse } from "papaparse";
 const { Search } = Input;
 const { Option } = Select;
 
-const TransactionSearch = ({ transactions }) => {
+const TransactionSearch = ({ transactions, exportToCsv, addTransaction }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [sortKey, setSortKey] = useState("");
+  const fileInput = useRef();
+
+  function importFromCsv(event) {
+    event.preventDefault();
+    console.log("hi");
+    parse(event.target.files[0], {
+      header: true,
+      complete: async function (results) {
+        // Now results.data is an array of objects representing your CSV rows
+        for (const transaction of results.data) {
+          // Write each transaction to Firebase, you can use the addTransaction function here
+          console.log("Transactions", transaction);
+          await addTransaction(transaction, true);
+        }
+      },
+    });
+    // TODO: Reload window
+  }
 
   const columns = [
     {
@@ -110,10 +129,13 @@ const TransactionSearch = ({ transactions }) => {
           style={{
             display: "flex",
             justifyContent: "space-between",
+            alignItems: "center",
             width: "100%",
+            marginBottom: "1rem",
           }}
         >
           <h2>My Transactions</h2>
+
           <Radio.Group
             className="input-radio"
             onChange={(e) => setSortKey(e.target.value)}
@@ -123,6 +145,29 @@ const TransactionSearch = ({ transactions }) => {
             <Radio.Button value="date">Sort by Date</Radio.Button>
             <Radio.Button value="amount">Sort by Amount</Radio.Button>
           </Radio.Group>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "1rem",
+              width: "400px",
+            }}
+          >
+            <button className="btn" onClick={exportToCsv}>
+              Export to CSV
+            </button>
+            <label for="file-csv" className="btn btn-blue">
+              Import from CSV
+            </label>
+            <input
+              onChange={importFromCsv}
+              id="file-csv"
+              type="file"
+              accept=".csv"
+              required
+              style={{ display: "none" }}
+            />
+          </div>
         </div>
 
         <Table columns={columns} dataSource={dataSource} />
