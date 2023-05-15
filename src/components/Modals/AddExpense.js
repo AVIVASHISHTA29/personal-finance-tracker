@@ -15,6 +15,7 @@ function AddExpenseModal({
   handleExpenseCancel,
   onFinish,
 }) {
+  const [form] = Form.useForm();
   return (
     <Modal
       style={{ fontWeight: 600 }}
@@ -24,8 +25,12 @@ function AddExpenseModal({
       footer={null}
     >
       <Form
+        form={form}
         layout="vertical"
-        onFinish={(values) => onFinish(values, "expense")}
+        onFinish={(values) => {
+          onFinish(values, "expense");
+          form.resetFields();
+        }}
       >
         <Form.Item
           style={{ fontWeight: 600 }}

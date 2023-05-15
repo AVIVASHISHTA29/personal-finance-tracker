@@ -16,6 +16,7 @@ function AddIncomeModal({
   handleIncomeCancel,
   onFinish,
 }) {
+  const [form] = Form.useForm();
   return (
     <Modal
       style={{ fontWeight: 600 }}
@@ -24,7 +25,14 @@ function AddIncomeModal({
       onCancel={handleIncomeCancel}
       footer={null}
     >
-      <Form layout="vertical" onFinish={(values) => onFinish(values, "income")}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={(values) => {
+          onFinish(values, "income");
+          form.resetFields();
+        }}
+      >
         <Form.Item
           style={{ fontWeight: 600 }}
           label="Name"
