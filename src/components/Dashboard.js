@@ -8,12 +8,41 @@ import AddIncomeModal from "./Modals/AddIncome";
 import AddExpenseModal from "./Modals/AddExpense";
 import Cards from "./Cards";
 import NoTransactions from "./NoTransactions";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth, db } from "../firebase";
+import { addDoc, collection, getDocs, query } from "firebase/firestore";
+import Loader from "./Loader";
 
 const Dashboard = () => {
-  const sampleTransactions = [];
+  const [user] = useAuthState(auth);
+
+  // const sampleTransactions = [
+  // {
+  //   name: "Pay day",
+  //   type: "income",
+  //   date: "2023-01-15",
+  //   amount: 2000,
+  //   tag: "salary",
+  // },
+  // {
+  //   name: "Dinner",
+  //   type: "expense",
+  //   date: "2023-01-20",
+  //   amount: 500,
+  //   tag: "food",
+  // },
+  // {
+  //   name: "Books",
+  //   type: "expense",
+  //   date: "2023-01-25",
+  //   amount: 300,
+  //   tag: "education",
+  // },
+  // ];
   const [isExpenseModalVisible, setIsExpenseModalVisible] = useState(false);
   const [isIncomeModalVisible, setIsIncomeModalVisible] = useState(false);
-  const [transactions, setTransactions] = useState(sampleTransactions);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [currentBalance, setCurrentBalance] = useState(0);
   const [income, setIncome] = useState(0);
   const [expenses, setExpenses] = useState(0);
@@ -74,6 +103,10 @@ const Dashboard = () => {
     setIsIncomeModalVisible(false);
   };
 
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
   const onFinish = (values, type) => {
     const newTransaction = {
       type: type,
@@ -84,6 +117,7 @@ const Dashboard = () => {
     };
 
     setTransactions([...transactions, newTransaction]);
+    addTransaction(newTransaction);
     calculateBalance();
   };
 
@@ -108,6 +142,33 @@ const Dashboard = () => {
   useEffect(() => {
     calculateBalance();
   }, [transactions]);
+
+  async function addTransaction(transaction) {
+    try {
+      const docRef = await addDoc(
+        collection(db, `users/${user.uid}/transactions`),
+        transaction
+      );
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  async function fetchTransactions() {
+    setLoading(true);
+    if (user) {
+      const q = query(collection(db, `users/${user.uid}/transactions`));
+      const querySnapshot = await getDocs(q);
+      let transactionsArray = [];
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        transactionsArray.push(doc.data());
+      });
+      setTransactions(transactionsArray);
+    }
+    setLoading(false);
+  }
 
   const balanceConfig = {
     data: balanceData,
@@ -135,46 +196,52 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <Header />
-      <Cards
-        currentBalance={currentBalance}
-        income={income}
-        expenses={expenses}
-        showExpenseModal={showExpenseModal}
-        showIncomeModal={showIncomeModal}
-        cardStyle={cardStyle}
-        reset={reset}
-      />
-
-      <AddExpenseModal
-        isExpenseModalVisible={isExpenseModalVisible}
-        handleExpenseCancel={handleExpenseCancel}
-        onFinish={onFinish}
-      />
-      <AddIncomeModal
-        isIncomeModalVisible={isIncomeModalVisible}
-        handleIncomeCancel={handleIncomeCancel}
-        onFinish={onFinish}
-      />
-      {transactions.length === 0 ? (
-        <NoTransactions />
+      {loading ? (
+        <Loader />
       ) : (
         <>
-          <Row gutter={16}>
-            <Card bordered={true} style={cardStyle}>
-              <h2>Financial Statistics</h2>
-              <Line {...{ ...balanceConfig, data: balanceData }} />
-            </Card>
+          <Cards
+            currentBalance={currentBalance}
+            income={income}
+            expenses={expenses}
+            showExpenseModal={showExpenseModal}
+            showIncomeModal={showIncomeModal}
+            cardStyle={cardStyle}
+            reset={reset}
+          />
 
-            <Card bordered={true} style={{ ...cardStyle, flex: 0.45 }}>
-              <h2>Total Spending</h2>
-              {spendingDataArray.length == 0 ? (
-                <p>Seems like you haven't spent anything till now...</p>
-              ) : (
-                <Pie {...{ ...spendingConfig, data: spendingDataArray }} />
-              )}
-            </Card>
-          </Row>
-          <TransactionSearch transactions={transactions} />
+          <AddExpenseModal
+            isExpenseModalVisible={isExpenseModalVisible}
+            handleExpenseCancel={handleExpenseCancel}
+            onFinish={onFinish}
+          />
+          <AddIncomeModal
+            isIncomeModalVisible={isIncomeModalVisible}
+            handleIncomeCancel={handleIncomeCancel}
+            onFinish={onFinish}
+          />
+          {transactions.length === 0 ? (
+            <NoTransactions />
+          ) : (
+            <>
+              <Row gutter={16}>
+                <Card bordered={true} style={cardStyle}>
+                  <h2>Financial Statistics</h2>
+                  <Line {...{ ...balanceConfig, data: balanceData }} />
+                </Card>
+
+                <Card bordered={true} style={{ ...cardStyle, flex: 0.45 }}>
+                  <h2>Total Spending</h2>
+                  {spendingDataArray.length == 0 ? (
+                    <p>Seems like you haven't spent anything till now...</p>
+                  ) : (
+                    <Pie {...{ ...spendingConfig, data: spendingDataArray }} />
+                  )}
+                </Card>
+              </Row>
+              <TransactionSearch transactions={transactions} />
+            </>
+          )}
         </>
       )}
     </div>
