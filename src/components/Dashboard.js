@@ -7,31 +7,10 @@ import Header from "./Header";
 import AddIncomeModal from "./Modals/AddIncome";
 import AddExpenseModal from "./Modals/AddExpense";
 import Cards from "./Cards";
+import NoTransactions from "./NoTransactions";
 
 const Dashboard = () => {
-  const sampleTransactions = [
-    {
-      name: "Pay day",
-      type: "income",
-      date: "2023-01-15",
-      amount: 2000,
-      tag: "salary",
-    },
-    {
-      name: "Dinner",
-      type: "expense",
-      date: "2023-01-20",
-      amount: 500,
-      tag: "food",
-    },
-    {
-      name: "Books",
-      type: "expense",
-      date: "2023-01-25",
-      amount: 300,
-      tag: "education",
-    },
-  ];
+  const sampleTransactions = [];
   const [isExpenseModalVisible, setIsExpenseModalVisible] = useState(false);
   const [isIncomeModalVisible, setIsIncomeModalVisible] = useState(false);
   const [transactions, setTransactions] = useState(sampleTransactions);
@@ -165,17 +144,6 @@ const Dashboard = () => {
         cardStyle={cardStyle}
         reset={reset}
       />
-      <Row gutter={16}>
-        <Card bordered={true} style={cardStyle}>
-          <h2>Financial Statistics</h2>
-          <Line {...{ ...balanceConfig, data: balanceData }} />
-        </Card>
-
-        <Card bordered={true} style={{ ...cardStyle, flex: 0.45 }}>
-          <h2>Total Spending</h2>
-          <Pie {...{ ...spendingConfig, data: spendingDataArray }} />
-        </Card>
-      </Row>
 
       <AddExpenseModal
         isExpenseModalVisible={isExpenseModalVisible}
@@ -187,8 +155,24 @@ const Dashboard = () => {
         handleIncomeCancel={handleIncomeCancel}
         onFinish={onFinish}
       />
+      {transactions.length === 0 ? (
+        <NoTransactions />
+      ) : (
+        <>
+          <Row gutter={16}>
+            <Card bordered={true} style={cardStyle}>
+              <h2>Financial Statistics</h2>
+              <Line {...{ ...balanceConfig, data: balanceData }} />
+            </Card>
 
-      <TransactionSearch transactions={transactions} />
+            <Card bordered={true} style={{ ...cardStyle, flex: 0.45 }}>
+              <h2>Total Spending</h2>
+              <Pie {...{ ...spendingConfig, data: spendingDataArray }} />
+            </Card>
+          </Row>
+          <TransactionSearch transactions={transactions} />
+        </>
+      )}
     </div>
   );
 };

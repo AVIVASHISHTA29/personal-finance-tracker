@@ -8,16 +8,19 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Header from "./Header";
+import { toast } from "react-toastify";
 
 const SignUpSignIn = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [flag, setFlag] = useState(false);
   const navigate = useNavigate();
 
   const createUserDocument = async (user) => {
+    setLoading(true);
     if (!user) return;
 
     const userRef = doc(db, "users", user.uid);
@@ -34,13 +37,18 @@ const SignUpSignIn = () => {
           photoURL: photoURL ? photoURL : "",
           createdAt,
         });
+        toast.success("Account Created!");
+        setLoading(false);
       } catch (error) {
+        toast.error(error.message);
         console.error("Error creating user document: ", error);
+        setLoading(false);
       }
     }
   };
 
   const signUpWithEmail = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       const result = await createUserWithEmailAndPassword(
@@ -50,36 +58,50 @@ const SignUpSignIn = () => {
       );
       const user = result.user;
       await createUserDocument(user);
+      toast.success("Successfully Signed Up!");
+      setLoading(false);
       navigate("/dashboard");
     } catch (error) {
+      toast.error(error.message);
       console.error(
         "Error signing up with email and password: ",
         error.message
       );
+      setLoading(false);
     }
   };
 
   const signInWithEmail = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const user = result.user;
       navigate("/dashboard");
+      toast.success("Logged In Successfully!");
+      setLoading(false);
     } catch (error) {
+      toast.error(error.message);
       console.error(
         "Error signing in with email and password: ",
         error.message
       );
+      setLoading(false);
     }
   };
 
   const signInWithGoogle = async () => {
+    setLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       await createUserDocument(user);
+      toast.success("User Authenticated Successfully!");
+      setLoading(false);
       navigate("/dashboard");
     } catch (error) {
+      setLoading(false);
+      toast.error(error.message);
       console.error("Error signing in with Google: ", error.message);
     }
   };
@@ -114,13 +136,21 @@ const SignUpSignIn = () => {
                 />
               </div>
 
-              <button className="btn" onClick={signInWithEmail}>
-                Log In with Email and Password
+              <button
+                disabled={loading}
+                className="btn"
+                onClick={signInWithEmail}
+              >
+                {loading ? "Loading..." : " Log In with Email and Password"}
               </button>
             </form>
             <p style={{ textAlign: "center", margin: 0 }}>or</p>
-            <button className="btn btn-blue" onClick={signInWithGoogle}>
-              Log In with Google
+            <button
+              disabled={loading}
+              className="btn btn-blue"
+              onClick={signInWithGoogle}
+            >
+              {loading ? "Loading..." : " Log In with Google"}
             </button>
             <p
               onClick={() => setFlag(!flag)}
@@ -180,12 +210,16 @@ const SignUpSignIn = () => {
               </div>
 
               <button type="submit" className="btn">
-                Sign Up with Email and Password
+                {loading ? "Loading..." : "Sign Up with Email and Password"}
               </button>
             </form>
             <p style={{ textAlign: "center", margin: 0 }}>or</p>
-            <button className="btn btn-blue" onClick={signInWithGoogle}>
-              Sign Up with Google
+            <button
+              disabled={loading}
+              className="btn btn-blue"
+              onClick={signInWithGoogle}
+            >
+              {loading ? "Loading..." : "Sign Up with Google"}
             </button>
             <p
               onClick={() => setFlag(!flag)}
