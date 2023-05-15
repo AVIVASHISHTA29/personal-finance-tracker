@@ -15,7 +15,3 @@ function App() {
 }
 
 export default App;
-
-// TODO: Optimise Bar Graph
-// TODO: Reset Form values of modals
-// TODO: Use of useContext() to manage state of user and to manage the transactions in firebase
