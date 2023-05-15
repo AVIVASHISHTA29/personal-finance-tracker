@@ -100,7 +100,12 @@ const TransactionSearch = ({
   }));
 
   return (
-    <div style={{ width: "100%", padding: "0rem 2rem" }}>
+    <div
+      style={{
+        width: "100%",
+        padding: "0rem 2rem",
+      }}
+    >
       <div
         style={{
           display: "flex",

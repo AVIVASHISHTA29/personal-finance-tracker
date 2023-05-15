@@ -267,14 +267,14 @@ const Dashboard = () => {
                   )}
                 </Card>
               </Row>
-              <TransactionSearch
-                transactions={transactions}
-                exportToCsv={exportToCsv}
-                fetchTransactions={fetchTransactions}
-                addTransaction={addTransaction}
-              />
             </>
           )}
+          <TransactionSearch
+            transactions={transactions}
+            exportToCsv={exportToCsv}
+            fetchTransactions={fetchTransactions}
+            addTransaction={addTransaction}
+          />
         </>
       )}
     </div>

@@ -9,6 +9,7 @@ function NoTransactions() {
         alignItems: "center",
         width: "100%",
         flexDirection: "column",
+        marginBottom: "2rem",
       }}
     >
       <img src={transactions} style={{ width: "400px", margin: "4rem" }} />
