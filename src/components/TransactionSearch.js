@@ -44,8 +44,6 @@ const TransactionSearch = ({
     } catch (e) {
       toast.error(e.message);
     }
-
-    // TODO: Reload window
   }
 
   const columns = [
