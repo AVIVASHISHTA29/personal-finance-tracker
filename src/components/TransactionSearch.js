@@ -40,6 +40,7 @@ const TransactionSearch = ({
       });
       toast.success("All Transactions Added");
       fetchTransactions();
+      event.target.files = null;
     } catch (e) {
       toast.error(e.message);
     }
