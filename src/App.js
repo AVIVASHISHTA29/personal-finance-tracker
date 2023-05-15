@@ -15,3 +15,8 @@ function App() {
 }
 
 export default App;
+
+// TODO: Handle auth changes - if user logged in keep the user logged in
+// TODO: If the user has no transactions show no transactions
+// TODO: Save the transactions in firestore and fetch them
+// TODO: Use of useContext() to manage state of user and to manage the transactions in firebase
